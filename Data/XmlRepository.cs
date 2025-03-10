@@ -1,7 +1,7 @@
-﻿using System;
-using System.Xml.Serialization;
-using Npgsql;
+﻿using Npgsql;
+using System;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace ImportarXML.Data;
 

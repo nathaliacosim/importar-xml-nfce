@@ -1,6 +1,5 @@
 ﻿using ImportarXML.Data;
 using Microsoft.Extensions.Configuration;
-using Npgsql;
 using System;
 using System.IO;
 

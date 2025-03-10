@@ -1,52 +1,62 @@
-# Importação de NFC-e (Nota Fiscal de Consumidor Eletrônica)
+ï»¿# ğŸ“¥ ImportaÃ§Ã£o de NFC-e (Nota Fiscal de Consumidor EletrÃ´nica)
 
-Este projeto é responsável por realizar a importação de arquivos XML de NFC-e (Nota Fiscal de Consumidor Eletrônica) para um banco de dados PostgreSQL. A solução lê os arquivos XML de um diretório, processa e insere os dados relevantes nas tabelas do banco de dados, como informações sobre a NFC-e, emitente, produtos, tributos e pagamentos.
+Este projeto realiza a importaÃ§Ã£o de arquivos XML de NFC-e (Nota Fiscal de Consumidor EletrÃ´nica) para um banco de dados PostgreSQL ğŸ“Š. A soluÃ§Ã£o lÃª os arquivos XML de um diretÃ³rio, processa e insere os dados relevantes nas tabelas do banco de dados, como informaÃ§Ãµes sobre a NFC-e, emitente, produtos, tributos e pagamentos.
 
-## Tecnologias Utilizadas
+---
 
-- **.NET Framework** (C#)
-- **PostgreSQL** (Banco de dados)
-- **Npgsql** (Biblioteca para comunicação com PostgreSQL)
-- **XML** (Formato de dados para as NFC-e)
-- **LINQ to XML** (Para manipulação dos dados XML)
+## ğŸš€ Tecnologias Utilizadas
 
-## Funcionalidades
+- ğŸ–¥ **.NET Framework** (C#)
+- ğŸ—„ **PostgreSQL** (Banco de dados)
+- ğŸ”Œ **Npgsql** (Biblioteca para comunicaÃ§Ã£o com PostgreSQL)
+- ğŸ“„ **XML** (Formato de dados para as NFC-e)
+- ğŸ” **LINQ to XML** (Para manipulaÃ§Ã£o dos dados XML)
 
-- Leitura de arquivos XML de NFC-e.
-- Extração e inserção dos dados em um banco de dados PostgreSQL.
-- Verificação da existência de NFC-e e emitente antes da inserção para evitar duplicações.
-- Processamento assíncrono de múltiplos arquivos XML em paralelo.
-- Controle de concorrência através de semáforos para limitar o número de tarefas simultâneas.
+---
 
-## Estrutura do Banco de Dados
+## âš¡ Funcionalidades
 
-O banco de dados utilizado é o PostgreSQL, com as seguintes tabelas:
+- ğŸ“‚ Leitura de arquivos XML de NFC-e.
+- ğŸ“Š ExtraÃ§Ã£o e inserÃ§Ã£o dos dados em um banco de dados PostgreSQL.
+- ğŸ›‘ VerificaÃ§Ã£o da existÃªncia de NFC-e e emitente antes da inserÃ§Ã£o para evitar duplicidades.
+- âš™ Processamento assÃ­ncrono de mÃºltiplos arquivos XML em paralelo.
+- ğŸ”„ Controle de concorrÃªncia atravÃ©s de semÃ¡foros para limitar o nÃºmero de tarefas simultÃ¢neas.
 
-- **nfce**: Armazena informações sobre a NFC-e, como chave de acesso, número, série, data de emissão e total.
-- **emitente**: Contém os dados do emitente da NFC-e, como CNPJ, nome e endereço.
-- **produto**: Armazena informações dos produtos presentes na NFC-e, como código, descrição, quantidade, valor unitário e total.
-- **tributos**: Armazena os tributos relacionados à NFC-e, como PIS e COFINS.
-- **pagamento**: Registra os detalhes do pagamento da NFC-e, como forma de pagamento e valor pago.
+---
 
-## Pré-requisitos
+## ğŸ—ƒ Estrutura do Banco de Dados
+
+O banco de dados utilizado Ã© o **PostgreSQL**, com as seguintes tabelas:
+
+- **nfce** ğŸ§¾: Armazena informaÃ§Ãµes sobre a NFC-e, como chave de acesso, nÃºmero, sÃ©rie, data de emissÃ£o e total.
+- **emitente** ğŸ¢: ContÃ©m os dados do emitente da NFC-e, como CNPJ, nome e endereÃ§o.
+- **produto** ğŸ“¦: Armazena informaÃ§Ãµes dos produtos presentes na NFC-e, como cÃ³digo, descriÃ§Ã£o, quantidade, valor unitÃ¡rio e total.
+- **impostos_detalhados** ğŸ’°: Armazena os tributos relacionados Ã  NFC-e, como PIS e COFINS.
+- **pagamento** ğŸ’³: Registra os detalhes do pagamento da NFC-e, como forma de pagamento e valor pago.
+
+---
+
+## ğŸ“Œ PrÃ©-requisitos
 
 - **.NET Framework** 4.7.2 ou superior.
 - **PostgreSQL**.
 - **Npgsql** instalado via NuGet.
-- Arquivos XML de NFC-e válidos.
+- Arquivos XML de NFC-e vÃ¡lidos.
 
-## Instalação
+---
 
-### 1. Clone o repositório
+## ğŸ“¥ InstalaÃ§Ã£o
+
+### 1ï¸âƒ£ Clone o repositÃ³rio
 
 ```bash
 git clone https://github.com/username/importar-xml-nfce.git
 cd importar-xml-nfce
 ```
 
-### 2. Configure o banco de dados
+### 2ï¸âƒ£ Configure o banco de dados
 
-Crie as tabelas no seu banco de dados PostgreSQL. Você pode usar os scripts SQL a seguir para criar a estrutura do banco:
+Crie as tabelas no seu banco de dados PostgreSQL. Utilize o Postgres 13 de preferÃªncia. VocÃª pode usar os scripts SQL a seguir para criar a estrutura do banco:
 
 ```sql
 CREATE TABLE nfce (
@@ -79,7 +89,7 @@ CREATE TABLE impostos_detalhados (
     id SERIAL PRIMARY KEY,
     id_nfce INTEGER REFERENCES nfce(id) ON DELETE CASCADE,
     tipo VARCHAR(50) NOT NULL,
-    cst VARCHAR(10) NOT NULL, 
+    cst VARCHAR(10) NOT NULL,
     base_calculo DECIMAL(10,2),
     aliquota DECIMAL(10,4),
     valor DECIMAL(10,2) NOT NULL
@@ -93,43 +103,56 @@ CREATE TABLE pagamento (
 );
 ```
 
-### 3. Configure o arquivo de conexão
+### 3ï¸âƒ£ Configure o arquivo de conexÃ£o
 
-No arquivo de código, você precisará passar a string de conexão do seu banco PostgreSQL. No exemplo abaixo:
+VÃ¡ atÃ© o diretÃ³rio `bin/debug/` e crie um arquivo chamado **appsettings.json**, contendo:
 
-```csharp
-string connectionString = "Host=myserver;Port=5432;Username=mylogin;Password=mypass;Database=mydatabase";
-var repository = new XmlRepository(connectionString);
+```json
+{
+  "Postgres": {
+    "Host": "localhost",
+    "Port": "porta_banco",
+    "Database": "nome_banco",
+    "Username": "usuario_postgres",
+    "Password": "senha_postgres"
+  }
+}
 ```
 
-Altere os parâmetros de conexão de acordo com a sua configuração do PostgreSQL.
+Preencha com os dados do seu banco de dados PostgreSQL.
 
-### 4. Coloque seus arquivos XML na pasta `XMLFiles`
+### 4ï¸âƒ£ Adicione seus arquivos XML na pasta `XMLFiles`
 
-Aplique os arquivos XML de NFC-e dentro da pasta `XMLFiles` no diretório do projeto (bin/debug/XMLFiles). O sistema irá ler todos os arquivos `.xml` dentro dessa pasta e processá-los.
+No diretÃ³rio `bin/debug/`, crie uma pasta chamada **XMLFiles** e coloque seus arquivos XML de NFC-e dentro dela. Somente arquivos `.xml` serÃ£o processados.
 
-## Uso
+---
 
-1. **Execute o programa**:
+## ğŸ¯ Uso
 
-   Após ter configurado o banco de dados e os arquivos XML, você pode executar o programa diretamente.
+1ï¸âƒ£ **Execute o programa**:
+
+   ApÃ³s configurar o banco de dados e os arquivos XML, execute:
 
    ```bash
    dotnet run
    ```
 
-2. **Processamento de arquivos**:
+2ï¸âƒ£ **Processamento de arquivos**:
 
-   O sistema irá automaticamente processar todos os arquivos XML de NFC-e encontrados na pasta `XMLFiles`. Para cada arquivo, ele fará a inserção dos dados relevantes no banco de dados.
+   O sistema processarÃ¡ automaticamente todos os arquivos XML de NFC-e encontrados na pasta `XMLFiles`. Para cada arquivo, ele farÃ¡ a inserÃ§Ã£o dos dados no banco de dados.
 
-## Contribuindo
+---
 
-1. Faça o fork do repositório.
+## ğŸ¤ Contribuindo
+
+1. FaÃ§a o fork do repositÃ³rio.
 2. Crie uma nova branch (`git checkout -b feature-nova-funcionalidade`).
-3. Faça suas alterações e commit (`git commit -am 'Adiciona nova funcionalidade'`).
-4. Faça o push para a branch (`git push origin feature-nova-funcionalidade`).
+3. FaÃ§a suas alteraÃ§Ãµes e commit (`git commit -am 'Adiciona nova funcionalidade'`).
+4. FaÃ§a o push para a branch (`git push origin feature-nova-funcionalidade`).
 5. Abra um Pull Request.
 
-## Licença
+---
 
-Este projeto está licenciado sob a [MIT License](LICENSE).
+## ğŸ“œ LicenÃ§a
+
+Este projeto estÃ¡ licenciado sob a [MIT License](LICENSE).
