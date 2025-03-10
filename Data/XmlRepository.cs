@@ -2,7 +2,6 @@
 using System.Xml.Serialization;
 using Npgsql;
 using System.IO;
-using System.Collections.Generic;
 
 namespace ImportarXML.Data;
 
@@ -74,7 +73,7 @@ public class XmlRepository
                 nfeProc = (NfeProc)serializer.Deserialize(fileStream);
             }
 
-            // Extrair dados
+            // Extrair dados básicos da NFC-e
             var chaveAcesso = nfeProc.NFe.InfNFe.Id.Substring(3);
             var numeroNfce = nfeProc.NFe.InfNFe.Ide.NNF;
             var serieNfce = nfeProc.NFe.InfNFe.Ide.Serie;
@@ -112,14 +111,50 @@ public class XmlRepository
             }
             Console.WriteLine("🛒 Produtos inseridos com sucesso!");
 
-            // Inserir tributos
+            // Inserir os impostos detalhados
             foreach (var det in nfeProc.NFe.InfNFe.Det)
             {
-                var vPIS = det.Imposto.ICMS?.ICMS60?.CST ?? 0;  // Atribuindo valor 0 caso seja nulo
-                InserirTributos(connection, nfceId, "PIS", vPIS);
-                var vCOFINS = det.Imposto.ICMS?.ICMS60?.CST ?? 0; // Atribuindo valor 0 caso seja nulo
-                InserirTributos(connection, nfceId, "COFINS", vCOFINS);
+                if (det.Imposto != null)
+                {
+                    // Inserir PIS detalhado
+                    if (det.Imposto.PIS != null && det.Imposto.PIS.PISAliq != null)
+                    {
+                        InserirImpostoDetalhado(
+                            connection,
+                            nfceId,
+                            "PIS",
+                            det.Imposto.PIS.PISAliq.CST.ToString(),
+                            det.Imposto.PIS.PISAliq.BaseCalculo,
+                            det.Imposto.PIS.PISAliq.Aliquota,
+                            det.Imposto.PIS.PISAliq.Valor);
+                    }
+                    // Inserir COFINS detalhado
+                    if (det.Imposto.COFINS != null && det.Imposto.COFINS.COFINSAliq != null)
+                    {
+                        InserirImpostoDetalhado(
+                            connection,
+                            nfceId,
+                            "COFINS",
+                            det.Imposto.COFINS.COFINSAliq.CST.ToString(),
+                            det.Imposto.COFINS.COFINSAliq.BaseCalculo,
+                            det.Imposto.COFINS.COFINSAliq.Aliquota,
+                            det.Imposto.COFINS.COFINSAliq.Valor);
+                    }
+                    // Inserir ICMS detalhado (ICMS60)
+                    if (det.Imposto.ICMS != null && det.Imposto.ICMS.ICMS60 != null)
+                    {
+                        InserirImpostoDetalhado(
+                            connection,
+                            nfceId,
+                            "ICMS",
+                            det.Imposto.ICMS.ICMS60.CST.ToString(),
+                            null, // Base de cálculo não informada no ICMS60
+                            null, // Alíquota não informada no ICMS60
+                            0);   // Valor não informado, definido como 0
+                    }
+                }
             }
+            Console.WriteLine("📊 Impostos detalhados inseridos com sucesso!");
 
             // Inserir pagamento
             foreach (var pag in nfeProc.NFe.InfNFe.Pag.DetPag)
@@ -185,10 +220,8 @@ public class XmlRepository
             cmd.Parameters.AddWithValue("Nome", nome);
             cmd.Parameters.AddWithValue("Endereco", endereco);
             cmd.ExecuteNonQuery();
-            Console.WriteLine("🏢 Emitente inserido com sucesso!");
         }
     }
-
 
     private void InserirProduto(NpgsqlConnection connection, int nfceId, string codigo, string descricao, decimal? quantidade, decimal? valorUnitario, decimal? valorTotal)
     {
@@ -205,13 +238,16 @@ public class XmlRepository
         }
     }
 
-    private void InserirTributos(NpgsqlConnection connection, int nfceId, string tipo, decimal valor)
+    private void InserirImpostoDetalhado(NpgsqlConnection connection, int nfceId, string tipo, string cst, decimal? baseCalculo, decimal? aliquota, decimal valor)
     {
-        var query = "INSERT INTO tributos (id_nfce, tipo, valor) VALUES (@IdNfce, @Tipo, @Valor)";
+        var query = "INSERT INTO impostos_detalhados (id_nfce, tipo, cst, base_calculo, aliquota, valor) VALUES (@IdNfce, @Tipo, @CST, @BaseCalculo, @Aliquota, @Valor)";
         using (var cmd = new NpgsqlCommand(query, connection))
         {
             cmd.Parameters.AddWithValue("IdNfce", nfceId);
             cmd.Parameters.AddWithValue("Tipo", tipo);
+            cmd.Parameters.AddWithValue("CST", cst);
+            cmd.Parameters.AddWithValue("BaseCalculo", baseCalculo ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("Aliquota", aliquota ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("Valor", valor);
             cmd.ExecuteNonQuery();
         }

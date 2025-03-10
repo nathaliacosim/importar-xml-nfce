@@ -40,8 +40,8 @@ O banco de dados utilizado é o PostgreSQL, com as seguintes tabelas:
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/username/importar-xml-nfe.git
-cd importar-xml-nfe
+git clone https://github.com/username/importar-xml-nfce.git
+cd importar-xml-nfce
 ```
 
 ### 2. Configure o banco de dados
@@ -75,10 +75,13 @@ CREATE TABLE produto (
     valor_total DECIMAL(10,2) NOT NULL
 );
 
-CREATE TABLE tributos (
+CREATE TABLE impostos_detalhados (
     id SERIAL PRIMARY KEY,
-    id_nfce INTEGER REFERENCES nfce(id),
+    id_nfce INTEGER REFERENCES nfce(id) ON DELETE CASCADE,
     tipo VARCHAR(50) NOT NULL,
+    cst VARCHAR(10) NOT NULL, 
+    base_calculo DECIMAL(10,2),
+    aliquota DECIMAL(10,4),
     valor DECIMAL(10,2) NOT NULL
 );
 

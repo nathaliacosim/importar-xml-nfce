@@ -127,8 +127,59 @@
 
     public class Imposto
     {
+        [XmlElement("vTotTrib")]
+        public decimal ValorTotalTributos { get; set; }
+
         [XmlElement("ICMS")]
         public ICMS ICMS { get; set; }
+
+        [XmlElement("PIS")]
+        public PIS PIS { get; set; }
+
+        [XmlElement("COFINS")]
+        public COFINS COFINS { get; set; }
+    }
+
+    public class PIS
+    {
+        [XmlElement("PISAliq")]
+        public PISAliq PISAliq { get; set; }
+    }
+
+    public class PISAliq
+    {
+        [XmlElement("CST")]
+        public int CST { get; set; }
+
+        [XmlElement("vBC")]
+        public decimal BaseCalculo { get; set; }
+
+        [XmlElement("pPIS")]
+        public decimal Aliquota { get; set; }
+
+        [XmlElement("vPIS")]
+        public decimal Valor { get; set; }
+    }
+
+    public class COFINS
+    {
+        [XmlElement("COFINSAliq")]
+        public COFINSAliq COFINSAliq { get; set; }
+    }
+
+    public class COFINSAliq
+    {
+        [XmlElement("CST")]
+        public int CST { get; set; }
+
+        [XmlElement("vBC")]
+        public decimal BaseCalculo { get; set; }
+
+        [XmlElement("pCOFINS")]
+        public decimal Aliquota { get; set; }
+
+        [XmlElement("vCOFINS")]
+        public decimal Valor { get; set; }
     }
 
     public class ICMS

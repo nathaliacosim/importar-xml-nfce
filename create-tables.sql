@@ -24,10 +24,13 @@ CREATE TABLE produto (
     valor_total DECIMAL(10,2) NOT NULL
 );
 
-CREATE TABLE tributos (
+CREATE TABLE impostos_detalhados (
     id SERIAL PRIMARY KEY,
     id_nfce INTEGER REFERENCES nfce(id) ON DELETE CASCADE,
     tipo VARCHAR(50) NOT NULL,
+    cst VARCHAR(10) NOT NULL,
+    base_calculo DECIMAL(10,2),
+    aliquota DECIMAL(10,4),
     valor DECIMAL(10,2) NOT NULL
 );
 
