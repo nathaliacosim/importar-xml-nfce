@@ -26,7 +26,7 @@ CREATE TABLE produto (
 
 CREATE TABLE impostos_detalhados (
     id SERIAL PRIMARY KEY,
-    id_nfce INTEGER REFERENCES nfce(id) ON DELETE CASCADE,
+    id_produto INTEGER REFERENCES produto(id) ON DELETE CASCADE,
     tipo VARCHAR(50) NOT NULL,
     cst VARCHAR(10) NOT NULL,
     base_calculo DECIMAL(10,2),
