@@ -77,7 +77,7 @@ CREATE TABLE emitente (
 
 CREATE TABLE produto (
     id SERIAL PRIMARY KEY,
-    id_nfce INTEGER REFERENCES nfce(id),
+    id_nfce INTEGER REFERENCES nfce(id) ON DELETE CASCADE,
     codigo VARCHAR(50) NOT NULL,
     descricao VARCHAR(255) NOT NULL,
     quantidade DECIMAL(10,2) NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE produto (
 
 CREATE TABLE impostos_detalhados (
     id SERIAL PRIMARY KEY,
-    id_nfce INTEGER REFERENCES nfce(id) ON DELETE CASCADE,
+    id_produto INTEGER REFERENCES produto(id) ON DELETE CASCADE,
     tipo VARCHAR(50) NOT NULL,
     cst VARCHAR(10) NOT NULL,
     base_calculo DECIMAL(10,2),
@@ -97,7 +97,7 @@ CREATE TABLE impostos_detalhados (
 
 CREATE TABLE pagamento (
     id SERIAL PRIMARY KEY,
-    id_nfce INTEGER REFERENCES nfce(id),
+    id_nfce INTEGER REFERENCES nfce(id) ON DELETE CASCADE,
     forma_pagamento VARCHAR(50) NOT NULL,
     valor_pago DECIMAL(10,2) NOT NULL
 );
